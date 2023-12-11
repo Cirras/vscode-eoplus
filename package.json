@@ -96,17 +96,20 @@
     "package": "npm run clean && npm run antlr && webpack --mode production",
     "prepare": "husky install",
     "pre-commit": "lint-staged",
+    "version": "ts-node scripts/bump-changelog-version.ts && git add CHANGELOG.md",
     "postinstall": "cd client && npm install && cd ../server && npm install && cd ../",
-    "deploy": "vsce publish"
+    "deploy": "vsce publish --skip-duplicate"
   },
   "devDependencies": {
     "@types/node": "^20.9.1",
     "@vscode/vsce": "^2.22.0",
     "husky": "^8.0.3",
+    "keep-a-changelog": "^2.5.3",
     "lint-staged": "^15.1.0",
     "prettier": "^3.1.0",
     "rimraf": "^5.0.5",
     "ts-loader": "^9.5.1",
+    "ts-node": "^10.9.2",
     "typescript": "^5.2.2",
     "webpack": "^5.89.0",
     "webpack-cli": "^5.1.4",
