@@ -1,0 +1,25 @@
+name: format
+
+on:
+  pull_request:
+  push:
+    branches:
+      - master
+
+jobs:
+  check-format:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+          cache: npm
+      - name: Check format with Prettier
+        run: |
+          npm ci
+          npx prettier --check **/*.{ts,md}
