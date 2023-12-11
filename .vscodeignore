@@ -14,3 +14,4 @@ scripts/
 client/
 server/
 node_modules/
+CHANGELOG.md
