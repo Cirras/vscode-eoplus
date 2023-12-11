@@ -1,0 +1,7 @@
+{
+	"extends": "../../tsconfig.settings.json",
+	"compilerOptions": {
+		"module": "NodeNext",
+		"lib": ["es2020", "WebWorker"]
+	}
+}

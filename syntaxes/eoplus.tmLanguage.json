@@ -1,0 +1,104 @@
+{
+  "scopeName": "source.eoplus",
+  "patterns": [
+    {
+      "include": "#attributes"
+    },
+    {
+      "include": "#literals"
+    },
+    {
+      "include": "#comments"
+    },
+    {
+      "include": "#keywords"
+    },
+    {
+      "include": "#identifiers"
+    }
+  ],
+  "repository": {
+    "attributes": {
+      "patterns": [
+        {
+          "begin": "(?i)\\bversion\\b",
+          "end": "(?=[a-z}\"])",
+          "name": "attribute.verion.eoplus",
+          "captures": {
+            "0": {
+              "name": "keyword.control.eoplus"
+            }
+          },
+          "patterns": [
+            {
+              "name": "constant.numeric.eoplus",
+              "match": "[\\d\\.]+"
+            },
+            {
+              "include": "#comments"
+            }
+          ]
+        }
+      ]
+    },
+    "literals": {
+      "patterns": [
+        {
+          "name": "constant.numeric.integer.eoplus",
+          "match": "\\b\\d+\\b"
+        },
+        {
+          "name": "string.quoted.double.eoplus",
+          "begin": "\"",
+          "beginCaptures": {
+            "0": {
+              "name": "punctuation.definition.string.begin.eoplus"
+            }
+          },
+          "end": "(\")|$",
+          "endCaptures": {
+            "1": {
+              "name": "punctuation.definition.string.end.eoplus"
+            }
+          },
+          "patterns": [
+            {
+              "name": "constant.character.escape.eoplus",
+              "match": "\\\\."
+            }
+          ]
+        }
+      ]
+    },
+    "comments": {
+      "patterns": [
+        {
+          "begin": "//",
+          "end": "$",
+          "name": "comment.line.double-slash.eoplus",
+          "captures": {
+            "0": {
+              "name": "punctuation.definition.comment.eoplus"
+            }
+          }
+        }
+      ]
+    },
+    "keywords": {
+      "patterns": [
+        {
+          "name": "keyword.control.eoplus",
+          "match": "(?i)\\b(main|state|questname|version|hidden|hidden_end|disabled|desc|action|if|elseif|elif|else|rule|goal|goto|character|npc|map|world)\\b"
+        }
+      ]
+    },
+    "identifiers": {
+      "patterns": [
+        {
+          "name": "variable.other.readwrite.eoplus",
+          "match": "(?i)\\b[\\$_a-z][_a-z0-9]*\\b"
+        }
+      ]
+    }
+  }
+}

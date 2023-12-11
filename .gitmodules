@@ -1,0 +1,8 @@
+[submodule "server/grammar/official"]
+	path = server/grammar/official
+	url = https://github.com/Cirras/eoplus-antlr4.git
+	branch = master
+[submodule "server/grammar/eoserv"]
+	path = server/grammar/eoserv
+	url = https://github.com/Cirras/eoplus-antlr4.git
+	branch = eoserv

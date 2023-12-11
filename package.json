@@ -1,0 +1,115 @@
+{
+  "name": "eoplus",
+  "displayName": "EO+",
+  "description": "Support for the EO+ quest scripting language from Endless Online.",
+  "author": "Jonah Jeleniewski",
+  "publisher": "cirras",
+  "license": "MIT",
+  "version": "1.0.0",
+  "icon": "./icons/logo.png",
+  "homepage": "https://github.com/cirras/vscode-eoplus/blob/master/README.md",
+  "bugs": {
+    "url": "https://github.com/cirras/vscode-eoplus/issues",
+    "email": "jonahjeleniewski@gmail.com"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/cirras/vscode-eoplus"
+  },
+  "categories": [
+    "Programming Languages"
+  ],
+  "keywords": [
+    "endless-online"
+  ],
+  "engines": {
+    "vscode": "^1.75.0"
+  },
+  "main": "./dist/extension-node",
+  "browser": "./dist/extension-web",
+  "contributes": {
+    "languages": [
+      {
+        "id": "eoplus",
+        "extensions": [
+          ".eqf"
+        ],
+        "aliases": [
+          "EO+"
+        ],
+        "configuration": "./language-configuration.json",
+        "icon": {
+          "light": "./icons/eqf.svg",
+          "dark": "./icons/eqf.svg"
+        }
+      }
+    ],
+    "grammars": [
+      {
+        "language": "eoplus",
+        "scopeName": "source.eoplus",
+        "path": "./syntaxes/eoplus.tmLanguage.json"
+      }
+    ],
+    "configuration": {
+      "type": "object",
+      "title": "EO+",
+      "properties": {
+        "eoplus.trace.server": {
+          "scope": "window",
+          "type": "string",
+          "enum": [
+            "off",
+            "messages",
+            "verbose"
+          ],
+          "default": "off",
+          "description": "Traces the communication between VS Code and the language server."
+        },
+        "eoplus.language.flavor": {
+          "scope": "window",
+          "type": "string",
+          "enum": [
+            "Official",
+            "EOSERV"
+          ],
+          "default": "EOSERV",
+          "description": "The \"flavor\" of the EO+ scripting language. Different quest engine implementations may have different syntax structures, actions, and rules."
+        }
+      }
+    },
+    "commands": [
+      {
+        "command": "eoplus.changeFlavor",
+        "title": "Change Language Flavor",
+        "category": "EO+"
+      }
+    ]
+  },
+  "scripts": {
+    "format": "prettier --cache --write **/*.{js,ts,md}",
+    "vscode:prepublish": "npm run package",
+    "antlr": "cd server && npm run antlr && cd ../",
+    "clean": "rimraf dist && rimraf client/out && rimraf server/out && rimraf server/src/common/antlr/generated",
+    "compile": "npm run clean && npm run antlr && webpack --mode development",
+    "watch": "npm run clean && npm run antlr && webpack --mode development --watch",
+    "package": "npm run clean && npm run antlr && webpack --mode production",
+    "prepare": "husky install",
+    "pre-commit": "lint-staged",
+    "postinstall": "cd client && npm install && cd ../server && npm install && cd ../",
+    "deploy": "vsce publish"
+  },
+  "devDependencies": {
+    "@types/node": "^20.9.1",
+    "@vscode/vsce": "^2.22.0",
+    "husky": "^8.0.3",
+    "lint-staged": "^15.1.0",
+    "prettier": "^3.1.0",
+    "rimraf": "^5.0.5",
+    "ts-loader": "^9.5.1",
+    "typescript": "^5.2.2",
+    "webpack": "^5.89.0",
+    "webpack-cli": "^5.1.4",
+    "webpack-merge": "^5.10.0"
+  }
+}

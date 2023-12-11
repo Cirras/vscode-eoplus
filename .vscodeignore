@@ -1,0 +1,16 @@
+.vscode/**
+.github/**
+.husky/**
+.gitattributes
+.gitmodules
+.prettierignore
+**/*.map
+.gitattributes
+.gitignore
+**/tsconfig.json
+**/tsconfig.base.json
+docs/
+scripts/
+client/
+server/
+node_modules/

@@ -1,0 +1,31 @@
+{
+	"name": "eoplus-language-server",
+	"description": "Language server for the EO+ quest scripting language from Endless Online.",
+	"version": "1.0.0",
+	"author": "Jonah Jeleniewski",
+	"type": "module",
+	"license": "MIT",
+	"engines": {
+		"node": "*"
+	},
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/cirras/vscode-eoplus"
+	},
+	"dependencies": {
+		"antlr4-c3": "^3.3.4",
+		"antlr4ng": "^2.0.2",
+		"fuzzysort": "^2.0.4",
+		"vscode-languageserver": "^8.1.0",
+		"vscode-languageserver-textdocument": "^1.0.8"
+	},
+	"devDependencies": {
+		"@types/node": "^14.11.5",
+		"antlr4ng-cli": "^1.0.4"
+	},
+	"scripts": {
+		"antlr": "npm run antlr:official && npm run antlr:eoserv",
+		"antlr:official": "antlr4ng -Dlanguage=TypeScript -o src/common/antlr/generated/official -Xexact-output-dir -visitor grammar/official/EOPlusLexer.g4 grammar/official/EOPlusParser.g4",
+		"antlr:eoserv": "antlr4ng -Dlanguage=TypeScript -o src/common/antlr/generated/eoserv -Xexact-output-dir -visitor grammar/eoserv/EOPlusLexer.g4 grammar/eoserv/EOPlusParser.g4"
+	}
+}
