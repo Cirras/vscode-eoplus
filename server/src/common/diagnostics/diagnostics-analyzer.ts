@@ -7,7 +7,6 @@ import {
   IntervalSet,
   Lexer,
   ParseTree,
-  Parser,
   ParserRuleContext,
   RecognitionException,
   Recognizer,

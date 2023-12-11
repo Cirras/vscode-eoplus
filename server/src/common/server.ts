@@ -1,6 +1,5 @@
 import {
   TextDocuments,
-  ProposedFeatures,
   InitializeParams,
   DidChangeConfigurationNotification,
   CompletionItem,
