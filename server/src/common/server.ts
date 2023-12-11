@@ -41,15 +41,12 @@ export function createServer(connection: Connection) {
 
   let hasConfigurationCapability = false;
   let hasWorkspaceFolderCapability = false;
-  let hasDiagnosticRelatedInformationCapability = false;
 
   connection.onInitialize((params: InitializeParams) => {
     let capabilities = params.capabilities;
 
     hasConfigurationCapability = !!capabilities.workspace?.configuration;
     hasWorkspaceFolderCapability = !!capabilities.workspace?.workspaceFolders;
-    hasDiagnosticRelatedInformationCapability =
-      !!capabilities?.textDocument?.publishDiagnostics?.relatedInformation;
 
     const result: InitializeResult = {
       capabilities: {
