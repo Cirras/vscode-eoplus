@@ -10,7 +10,7 @@ language support for the EO+ quest scripting language from Endless Online.
 Completion results appear for symbols as you type.
 
 <p align="center">
-	<img src="docs/images/completion-signature-help.gif" alt="Code completion and signature help" style="width: 75%">
+	<img src="https://raw.githubusercontent.com/cirras/vscode-eoplus/master/docs/images/completion-signature-help.gif" alt="Code completion and signature help" style="width: 75%">
 </p>
 
 ## Signature help
@@ -26,7 +26,7 @@ Documentation appears when you hover over a symbol.
 Jump to or peek a symbol's declaration.
 
 <p align="center">
-	<img src="docs/images/go-to-definition.gif" alt="Go to definition using the context menu" style="width: 75%">
+	<img src="https://raw.githubusercontent.com/cirras/vscode-eoplus/master/docs/images/go-to-definition.gif" alt="Go to definition using the context menu" style="width: 75%">
 </p>
 
 ## Find references
@@ -34,7 +34,7 @@ Jump to or peek a symbol's declaration.
 Find or go to the references of a symbol.
 
 <p align="center">
-	<img align="center" src="docs/images/find-references.gif" alt="Find references using the context menu" style="width: 75%">
+	<img align="center" src="https://raw.githubusercontent.com/cirras/vscode-eoplus/master/docs/images/find-references.gif" alt="Find references using the context menu" style="width: 75%">
 </p>
 
 ## Go to symbol
@@ -42,7 +42,7 @@ Find or go to the references of a symbol.
 Search for symbols in your file with the `Ctrl`+`Shift`+`O` shortcut.
 
 <p align="center">
-	<img align="center" src="docs/images/go-to-symbol.gif" alt="Use Go to Symbol to locate the TimePortal symbol" style="width: 75%">
+	<img align="center" src="https://raw.githubusercontent.com/cirras/vscode-eoplus/master/docs/images/go-to-symbol.gif" alt="Use Go to Symbol to locate the TimePortal symbol" style="width: 75%">
 </p>
 
 ## Document outline
@@ -50,7 +50,7 @@ Search for symbols in your file with the `Ctrl`+`Shift`+`O` shortcut.
 See all the symbols in the current file in the [Outline view](https://code.visualstudio.com/docs/getstarted/userinterface#_outline-view).
 
 <p align="center">
-	<img src="docs/images/outline.gif" alt="Outline of an EO+ file" style="width: 75%">
+	<img src="https://raw.githubusercontent.com/cirras/vscode-eoplus/master/docs/images/outline.gif" alt="Outline of an EO+ file" style="width: 75%">
 </p>
 
 ## Diagnostics
@@ -58,7 +58,7 @@ See all the symbols in the current file in the [Outline view](https://code.visua
 See syntax errors ahead of time, and even get some basic linting.
 
 <p align="center">
-	<img src="docs/images/diagnostics.gif" alt="Diagnostics on an EO+ file" style="width: 75%">
+	<img src="https://raw.githubusercontent.com/cirras/vscode-eoplus/master/docs/images/diagnostics.gif" alt="Diagnostics on an EO+ file" style="width: 75%">
 </p>
 
 # Requirements
