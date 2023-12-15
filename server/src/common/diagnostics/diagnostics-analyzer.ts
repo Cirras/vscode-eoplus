@@ -458,46 +458,50 @@ export class DiagnosticsAnalyzer {
   }
 
   private checkMainExists(result: Diagnostic[]) {
-    if (!this.mainExists) {
-      const token = this.findFirstMeaningfulToken();
-      if (token && !"main".startsWith(token.text!.toLowerCase())) {
-        const range = tokenRange(token);
-
-        let insertOffset = 0;
-        while (true) {
-          const index = token.start + insertOffset - 1;
-          if (index < 0) {
-            break;
-          }
-
-          const character = token.inputStream?.getText(index, index);
-          if (character !== " " && character !== "\t") {
-            break;
-          }
-
-          --insertOffset;
-        }
-
-        result.push({
-          range,
-          severity: DiagnosticSeverity.Error,
-          source: DIAGNOSTIC_SOURCE,
-          message: "'main' block is missing.",
-          data: {
-            title: "Add a 'main' block",
-            edits: [
-              TextEdit.insert(
-                {
-                  character: range.start.character + insertOffset,
-                  line: range.start.line,
-                },
-                "main\n{\n\n}\n\n",
-              ),
-            ],
-          },
-        });
-      }
+    if (this.mainExists) {
+      return;
     }
+
+    const token = this.findFirstMeaningfulToken();
+    if (!token || "main".startsWith(token.text!.toLowerCase())) {
+      return;
+    }
+
+    const range = tokenRange(token);
+
+    let insertOffset = 0;
+    while (true) {
+      const index = token.start + insertOffset - 1;
+      if (index < 0) {
+        break;
+      }
+
+      const character = token.inputStream?.getText(index, index);
+      if (character !== " " && character !== "\t") {
+        break;
+      }
+
+      --insertOffset;
+    }
+
+    result.push({
+      range,
+      severity: DiagnosticSeverity.Error,
+      source: DIAGNOSTIC_SOURCE,
+      message: "'main' block is missing.",
+      data: {
+        title: "Add a 'main' block",
+        edits: [
+          TextEdit.insert(
+            {
+              character: range.start.character + insertOffset,
+              line: range.start.line,
+            },
+            "main\n{\n\n}\n\n",
+          ),
+        ],
+      },
+    });
   }
 
   private getRuleName(tree: ParseTree | null): string | null {
