@@ -61,6 +61,14 @@ See syntax errors ahead of time, and even get some basic linting.
 	<img src="https://raw.githubusercontent.com/cirras/vscode-eoplus/master/docs/images/diagnostics.gif" alt="Diagnostics on an EO+ file" style="width: 75%">
 </p>
 
+## Quick fixes
+
+Apply quick fixes for various errors and warnings with `Ctrl`+`.`.
+
+<p align="center">
+	<img src="https://raw.githubusercontent.com/cirras/vscode-eoplus/master/docs/images/quickfix.gif" alt="Fixing errors in an EO+ file with quick fixes" style="width: 75%">
+</p>
+
 # Requirements
 
 - Visual Studio Code 1.75+

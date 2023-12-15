@@ -13,7 +13,12 @@ import {
   TerminalNode,
   Token,
 } from "antlr4ng";
-import { Diagnostic, DiagnosticSeverity, Range } from "vscode-languageserver";
+import {
+  Diagnostic,
+  DiagnosticSeverity,
+  Range,
+  TextEdit,
+} from "vscode-languageserver";
 import { Flavor } from "../flavor.js";
 import { ParserFactory } from "../parser/parser-factory.js";
 import { SymbolTableFactory } from "../symbol/symbol-table-factory.js";
@@ -30,6 +35,12 @@ import { getSpellingSuggestion } from "../utils/suggestion-utils.js";
 import { InvocableSymbol } from "../symbol/invocable-symbol.js";
 
 const DIAGNOSTIC_SOURCE = "eo+";
+
+export interface QuickFix {
+  title: string;
+  edits: TextEdit[];
+  isPreferred: boolean;
+}
 
 export class DiagnosticsAnalyzer {
   private readonly flavor: Flavor;
@@ -59,18 +70,7 @@ export class DiagnosticsAnalyzer {
     this.referenceHelper = new ReferenceIdentificationHelper(this.parser);
 
     this.collectDiagnostics(file, diagnostics);
-
-    if (!this.mainExists) {
-      const token = this.findFirstMeaningfulToken();
-      if (token && !"main".startsWith(token.text!.toLowerCase())) {
-        diagnostics.push({
-          range: tokenRange(token),
-          severity: DiagnosticSeverity.Error,
-          source: DIAGNOSTIC_SOURCE,
-          message: "'main' block is missing.",
-        });
-      }
-    }
+    this.checkMainExists(diagnostics);
 
     return diagnostics;
   }
@@ -133,8 +133,10 @@ export class DiagnosticsAnalyzer {
       return;
     }
 
+    const range = treeRange(tree);
     const kindName = ReferenceKind[referenceKind].toLowerCase();
     let message = `Cannot find ${kindName} '${name}'.`;
+    const data = new Array<QuickFix>();
 
     const suggestion = getSpellingSuggestion(
       name,
@@ -143,13 +145,30 @@ export class DiagnosticsAnalyzer {
     );
     if (suggestion) {
       message += ` Did you mean '${suggestion.name}'?`;
+      data.push({
+        title: `Change spelling to '${suggestion.name}'`,
+        edits: [TextEdit.replace(range, suggestion.name)],
+        isPreferred: true,
+      });
+    }
+
+    const stateBlock = this.getContextByName("stateBlock", tree);
+
+    if (stateBlock) {
+      const position = treeRange(stateBlock).end;
+      data.push({
+        title: `Add missing state '${name}'`,
+        edits: [TextEdit.insert(position, `\n\nstate ${name}\n{\n\n}`)],
+        isPreferred: data.length === 0,
+      });
     }
 
     result.push({
-      range: treeRange(tree),
+      range,
       severity: DiagnosticSeverity.Error,
       source: DIAGNOSTIC_SOURCE,
       message,
+      data,
     });
   }
 
@@ -317,6 +336,11 @@ export class DiagnosticsAnalyzer {
         severity: DiagnosticSeverity.Error,
         source: DIAGNOSTIC_SOURCE,
         message: "Cannot redeclare 'main' block.",
+        data: {
+          title: "Remove duplicate 'main' block",
+          edits: [TextEdit.del(treeRange(tree))],
+          isPreferred: true,
+        },
       });
     }
 
@@ -342,6 +366,11 @@ export class DiagnosticsAnalyzer {
           severity: DiagnosticSeverity.Error,
           source: DIAGNOSTIC_SOURCE,
           message: `Cannot specify multiple '${attributeName}' attributes.`,
+          data: {
+            title: `Remove duplicate '${attributeName}' attribute`,
+            edits: [TextEdit.del(treeRange(attribute))],
+            isPreferred: true,
+          },
         });
       }
 
@@ -389,6 +418,11 @@ export class DiagnosticsAnalyzer {
             severity: DiagnosticSeverity.Error,
             source: DIAGNOSTIC_SOURCE,
             message: "Cannot specify multiple state descriptions.",
+            data: {
+              title: `Remove duplicate 'desc'`,
+              edits: [TextEdit.del(treeRange(desc!))],
+              isPreferred: true,
+            },
           });
         }
         descExists = true;
@@ -423,6 +457,49 @@ export class DiagnosticsAnalyzer {
     }
   }
 
+  private checkMainExists(result: Diagnostic[]) {
+    if (!this.mainExists) {
+      const token = this.findFirstMeaningfulToken();
+      if (token && !"main".startsWith(token.text!.toLowerCase())) {
+        const range = tokenRange(token);
+
+        let insertOffset = 0;
+        while (true) {
+          const index = token.start + insertOffset - 1;
+          if (index < 0) {
+            break;
+          }
+
+          const character = token.inputStream?.getText(index, index);
+          if (character !== " " && character !== "\t") {
+            break;
+          }
+
+          --insertOffset;
+        }
+
+        result.push({
+          range,
+          severity: DiagnosticSeverity.Error,
+          source: DIAGNOSTIC_SOURCE,
+          message: "'main' block is missing.",
+          data: {
+            title: "Add a 'main' block",
+            edits: [
+              TextEdit.insert(
+                {
+                  character: range.start.character + insertOffset,
+                  line: range.start.line,
+                },
+                "main\n{\n\n}\n\n",
+              ),
+            ],
+          },
+        });
+      }
+    }
+  }
+
   private getRuleName(tree: ParseTree | null): string | null {
     if (tree instanceof ParserRuleContext) {
       return this.parser.ruleNames[tree.ruleIndex] ?? null;
@@ -433,6 +510,20 @@ export class DiagnosticsAnalyzer {
   private getTokenName(tree: ParseTree | null): string | null {
     if (tree instanceof TerminalNode) {
       return this.parser.vocabulary.getSymbolicName(tree.symbol.type);
+    }
+    return null;
+  }
+
+  private getContextByName(
+    name: string,
+    tree: ParseTree,
+  ): ParserRuleContext | null {
+    let result: ParseTree | null = tree;
+    while (result !== null) {
+      if (this.getRuleName(result) === name) {
+        return result as ParserRuleContext;
+      }
+      result = result.parent;
     }
     return null;
   }

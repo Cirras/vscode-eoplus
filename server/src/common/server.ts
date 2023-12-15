@@ -23,6 +23,10 @@ import {
   PrepareRenameParams,
   Range,
   Connection,
+  CodeActionParams,
+  CodeAction,
+  CodeActionKind,
+  Diagnostic,
 } from "vscode-languageserver";
 import { TextDocument } from "vscode-languageserver-textdocument";
 import { CharStreams } from "antlr4ng";
@@ -33,7 +37,10 @@ import { SemanticTokensComputer } from "./highlight/semantic-tokens-computer.js"
 import { CodeNavigationHelper } from "./navigation/code-navigation-helper.js";
 import { HoverGenerator } from "./hover/hover-generator.js";
 import { DocumentSymbolGenerator } from "./document-symbol/document-symbol-generator.js";
-import { DiagnosticsAnalyzer } from "./diagnostics/diagnostics-analyzer.js";
+import {
+  DiagnosticsAnalyzer,
+  QuickFix,
+} from "./diagnostics/diagnostics-analyzer.js";
 import { RenameHelper } from "./rename/rename-helper.js";
 
 export function createServer(connection: Connection) {
@@ -72,6 +79,7 @@ export function createServer(connection: Connection) {
         renameProvider: {
           prepareProvider: true,
         },
+        codeActionProvider: true,
         textDocumentSync: TextDocumentSyncKind.Incremental,
       },
     };
@@ -360,6 +368,48 @@ export function createServer(connection: Connection) {
       return null;
     },
   );
+
+  connection.onCodeAction(
+    async (params: CodeActionParams): Promise<CodeAction[]> => {
+      const uri = params.textDocument.uri;
+      return params.context.diagnostics
+        .filter((diagnostic) => diagnostic.data)
+        .flatMap((diagnostic) => dataToCodeAction(uri, diagnostic));
+    },
+  );
+
+  function dataToCodeAction(
+    uri: string,
+    diagnostic: Diagnostic,
+  ): CodeAction | CodeAction[] {
+    const data = diagnostic.data;
+
+    if (data instanceof Array) {
+      return data.map((quickFix) =>
+        quickFixToCodeAction(uri, diagnostic, quickFix),
+      );
+    }
+
+    return quickFixToCodeAction(uri, diagnostic, data);
+  }
+
+  function quickFixToCodeAction(
+    uri: string,
+    diagnostic: Diagnostic,
+    quickFix: QuickFix,
+  ): CodeAction {
+    return {
+      title: quickFix.title,
+      kind: CodeActionKind.QuickFix,
+      diagnostics: [diagnostic],
+      edit: {
+        changes: {
+          [uri]: quickFix.edits,
+        },
+      },
+      isPreferred: quickFix.isPreferred,
+    };
+  }
 
   connection.onRequest(SemanticTokensRequest.type, async (params) => {
     let uri = params.textDocument.uri;
