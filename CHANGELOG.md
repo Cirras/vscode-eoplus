@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- "Name reference casing should match declaration" diagnostic.
 - "Keywords should be lowercase" diagnostic.
 - `eoplus.diagnostics.alternateKeywordCasings` property to specify alternate keyword casings.
 

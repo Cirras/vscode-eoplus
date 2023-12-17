@@ -184,6 +184,21 @@ export class DiagnosticsAnalyzer {
     if (symbol instanceof InvocableSymbol) {
       this.collectDiagnosticsFromInvocableReference(tree, symbol, result);
     }
+
+    if (tree.getText() !== symbol.name) {
+      const range = treeRange(tree);
+      result.push({
+        range,
+        severity: DiagnosticSeverity.Warning,
+        source: DIAGNOSTIC_SOURCE,
+        message: `Name reference casing should match declaration ('${symbol.name}').`,
+        data: {
+          title: `Change casing to '${symbol.name}'`,
+          edits: [TextEdit.replace(range, symbol.name)],
+          isPreferred: true,
+        },
+      });
+    }
   }
 
   private collectDiagnosticsFromInvocableReference(
