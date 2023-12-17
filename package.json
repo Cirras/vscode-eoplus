@@ -5,7 +5,7 @@
   "author": "Jonah Jeleniewski",
   "publisher": "cirras",
   "license": "MIT",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "icon": "./icons/logo.png",
   "homepage": "https://github.com/cirras/vscode-eoplus/blob/master/README.md",
   "bugs": {
