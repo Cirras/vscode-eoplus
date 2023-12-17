@@ -42,6 +42,7 @@ import {
   QuickFix,
 } from "./diagnostics/diagnostics-analyzer.js";
 import { RenameHelper } from "./rename/rename-helper.js";
+import { EOPlusSettings } from "./settings.js";
 
 export function createServer(connection: Connection) {
   let documents: TextDocuments<TextDocument> = new TextDocuments(TextDocument);
@@ -104,18 +105,10 @@ export function createServer(connection: Connection) {
     }
   });
 
-  interface EOPlusSettings {
-    trace: {
-      server: "off" | "messages" | "verbose";
-    };
-    language: {
-      flavor: Flavor;
-    };
-  }
-
   const defaultSettings: EOPlusSettings = {
     trace: { server: "off" },
     language: { flavor: Flavor.EOSERV },
+    diagnostics: { alternateKeywordCasings: ["Main"] },
   };
 
   let globalSettings: EOPlusSettings = defaultSettings;
@@ -162,7 +155,10 @@ export function createServer(connection: Connection) {
 
   async function validateTextDocument(document: TextDocument): Promise<void> {
     const settings = await getDocumentSettings(document.uri);
-    const analyzer = new DiagnosticsAnalyzer(settings.language.flavor);
+    const analyzer = new DiagnosticsAnalyzer(
+      settings.language.flavor,
+      settings.diagnostics,
+    );
 
     const diagnostics = analyzer.analyze(
       CharStreams.fromString(document.getText()),

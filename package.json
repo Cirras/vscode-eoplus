@@ -75,6 +75,17 @@
           ],
           "default": "EOSERV",
           "description": "The \"flavor\" of the EO+ scripting language. Different quest engine implementations may have different syntax structures, actions, and rules."
+        },
+        "eoplus.diagnostics.alternateKeywordCasings": {
+          "scope": "window",
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": [
+            "Main"
+          ],
+          "description": "Alternate casings for keywords that should be permitted (lowercase is expected otherwise)."
         }
       }
     },

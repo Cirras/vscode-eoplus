@@ -33,6 +33,7 @@ import { RuleSymbol } from "../symbol/rule-symbol.js";
 import { ActionSymbol } from "../symbol/action-symbol.js";
 import { getSpellingSuggestion } from "../utils/suggestion-utils.js";
 import { InvocableSymbol } from "../symbol/invocable-symbol.js";
+import { DiagnosticsSettings } from "../settings.js";
 
 const DIAGNOSTIC_SOURCE = "eo+";
 
@@ -44,13 +45,15 @@ export interface QuickFix {
 
 export class DiagnosticsAnalyzer {
   private readonly flavor: Flavor;
+  private readonly settings: DiagnosticsSettings;
   private parser: FlavorAwareParser;
   private symbolTable: SymbolTable;
   private referenceHelper: ReferenceIdentificationHelper;
   private mainExists: boolean;
 
-  constructor(flavor: Flavor) {
+  constructor(flavor: Flavor, settings: DiagnosticsSettings) {
     this.flavor = flavor;
+    this.settings = settings;
   }
 
   analyze(code: CharStream): Diagnostic[] {
@@ -97,6 +100,7 @@ export class DiagnosticsAnalyzer {
     }
 
     this.collectDiagnosticsFromNameReferences(tree, result);
+    this.collectDiagnosticsFromKeywords(tree, result);
   }
 
   private collectDiagnosticsFromNameReferences(
@@ -305,6 +309,38 @@ export class DiagnosticsAnalyzer {
     }
 
     return null;
+  }
+
+  private collectDiagnosticsFromKeywords(
+    tree: TerminalNode,
+    result: Diagnostic[],
+  ) {
+    if (!this.parser.isKeyword(tree.symbol.type)) {
+      return;
+    }
+
+    const lowercase = tree.symbol.text!.toLowerCase();
+    if (tree.symbol.text === lowercase) {
+      return;
+    }
+
+    if (this.settings.alternateKeywordCasings.includes(tree.symbol.text!)) {
+      return;
+    }
+
+    const range = treeRange(tree);
+
+    result.push({
+      range,
+      severity: DiagnosticSeverity.Warning,
+      source: DIAGNOSTIC_SOURCE,
+      message: "Keywords should be lowercase.",
+      data: {
+        title: `Change casing to '${lowercase}'`,
+        edits: [TextEdit.replace(range, lowercase)],
+        isPreferred: true,
+      },
+    });
   }
 
   private collectDiagnosticsFromParserRuleContext(
