@@ -63,7 +63,7 @@ See syntax errors ahead of time, and even get some basic linting.
 
 ## Quick fixes
 
-Apply quick fixes for various errors and warnings with `Ctrl`+`.`.
+Apply quick fixes for various errors and warnings with the `Ctrl`+`.` shortcut.
 
 <p align="center">
 	<img src="https://raw.githubusercontent.com/cirras/vscode-eoplus/master/docs/images/quickfix.gif" alt="Fixing errors in an EO+ file with quick fixes" style="width: 75%">
